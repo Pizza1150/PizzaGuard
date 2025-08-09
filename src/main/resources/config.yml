@@ -1,8 +1,3 @@
 password: pizzaguard
-
 whitelist:
 #  - Pizza1150
-
-settings:
-  log-attempts: true
-  broadcast-op: true

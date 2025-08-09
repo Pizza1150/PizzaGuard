@@ -22,6 +22,9 @@ public final class PizzaGuard extends JavaPlugin {
     @Getter
     private VerificationManager verificationManager;
 
+    @Getter
+    private boolean foundLuckPerms;
+
     public static final String PREFIX = "[PizzaGuard] ";
 
     @Override
@@ -29,6 +32,12 @@ public final class PizzaGuard extends JavaPlugin {
         saveDefaultConfig();
 
         plugin = this;
+
+        if (Bukkit.getPluginManager().getPlugin("LuckPerms") != null) {
+            foundLuckPerms = true;
+            plugin.getLogger().info("Hooked onto LuckPerms");
+        }
+
         configManager = new ConfigManager(this);
         verificationManager = new VerificationManager(this);
 
@@ -41,7 +50,7 @@ public final class PizzaGuard extends JavaPlugin {
         // Check OP task
         Bukkit.getScheduler().runTaskTimer(this, () -> {
             Bukkit.getOnlinePlayers().stream()
-                .filter(p -> p.isOp() != verificationManager.isVerified(p))
+                .filter(p -> verificationManager.isOperator(p) != verificationManager.isVerified(p))
                 .forEach(verificationManager::unverifyPlayer);
         }, 0L, 10L);
     }

@@ -28,47 +28,43 @@ public class VerificationManager {
 
         if (!isInWhitelist(player)) {
             player.sendMessage("§c" + PizzaGuard.PREFIX + "You are not in the OP whitelist!");
-
-            if (plugin.getConfigManager().isLogAttempts()) {
-                plugin.getLogger().warning(player.getName() + " tried to verify but is not on the whitelist!");
-                getVerifiedPlayers().forEach(p -> p.sendMessage("§e" + PizzaGuard.PREFIX + player.getName() + " tried to verify but is not on the whitelist!"));
-            }
+            plugin.getLogger().warning(player.getName() + " tried to verify but is not on the whitelist!");
+            getVerifiedPlayers().forEach(p -> p.sendMessage("§e" + PizzaGuard.PREFIX + player.getName() + " tried to verify but is not on the whitelist!"));
             return;
         }
 
         if (!plugin.getConfigManager().getPassword().equals(password)) {
             player.sendMessage("§c" + PizzaGuard.PREFIX + "Incorrect password!");
-
-            if (plugin.getConfigManager().isLogAttempts()) {
-                plugin.getLogger().warning(player.getName() + " tried to verify with a wrong password!");
-                getVerifiedPlayers().forEach(p -> p.sendMessage("§e" + PizzaGuard.PREFIX + player.getName() + " tried to verify with a wrong password!"));
-            }
+            plugin.getLogger().warning(player.getName() + " tried to verify with a wrong password!");
+            getVerifiedPlayers().forEach(p -> p.sendMessage("§e" + PizzaGuard.PREFIX + player.getName() + " tried to verify with a wrong password!"));
             return;
         }
 
         verifiedPlayers.add(player.getUniqueId());
         player.setOp(true);
-        player.sendMessage("§a" + PizzaGuard.PREFIX + "Successfully verified!");
 
-        if (plugin.getConfigManager().isBroadcastOp()) {
-            plugin.getLogger().info(player.getName() + " has been verified!");
-            getVerifiedPlayers().stream()
-                .filter(p -> !p.equals(player)) // Prevent self notification
-                .forEach(p -> p.sendMessage("§e" + PizzaGuard.PREFIX + player.getName() + " has been verified!"));
-        }
+        player.sendMessage("§a" + PizzaGuard.PREFIX + "Successfully verified!");
+        plugin.getLogger().info(player.getName() + " has been verified!");
+        getVerifiedPlayers().stream()
+            .filter(p -> !p.equals(player)) // Prevent self notification
+            .forEach(p -> p.sendMessage("§e" + PizzaGuard.PREFIX + player.getName() + " has been verified!"));
     }
 
     public void unverifyPlayer(Player player) {
         verifiedPlayers.remove(player.getUniqueId());
-        if (player.isOp()) {
+        if (isOperator(player)) {
             player.setOp(false);
-            player.sendMessage("§c" + PizzaGuard.PREFIX + "You have been revoked OP status!");
+            if (plugin.isFoundLuckPerms() && player.hasPermission("*"))
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + player.getName() + " permission unset *");
 
-            if (plugin.getConfigManager().isBroadcastOp()) {
-                plugin.getLogger().info(player.getName() + " has been revoked OP status!");
-                getVerifiedPlayers().forEach(p -> p.sendMessage("§e" + PizzaGuard.PREFIX + player.getName() + " has been revoked OP status!"));
-            }
+            player.sendMessage("§c" + PizzaGuard.PREFIX + "You have been revoked OP status!");
+            plugin.getLogger().info(player.getName() + " has been revoked OP status!");
+            getVerifiedPlayers().forEach(p -> p.sendMessage("§e" + PizzaGuard.PREFIX + player.getName() + " has been revoked OP status!"));
         }
+    }
+
+    public boolean isOperator(Player player) {
+        return player.isOp() || player.hasPermission("*");
     }
 
     public boolean isVerified(Player player) {

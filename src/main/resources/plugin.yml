@@ -2,6 +2,7 @@ name: PizzaGuard
 version: '1.0'
 main: me.pizza.pizzaguard.PizzaGuard
 api-version: '1.21'
+softdepend: [LuckPerms]
 
 commands:
   pizzaguard:

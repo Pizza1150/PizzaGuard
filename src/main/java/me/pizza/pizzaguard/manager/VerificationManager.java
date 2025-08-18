@@ -9,6 +9,7 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffectType;
 
 public class VerificationManager {
 
@@ -42,6 +43,8 @@ public class VerificationManager {
 
         verifiedPlayers.add(player.getUniqueId());
         player.setOp(true);
+        player.removePotionEffect(PotionEffectType.BLINDNESS);
+        player.removePotionEffect(PotionEffectType.SLOWNESS);
 
         player.sendMessage("§a" + PizzaGuard.PREFIX + "Successfully verified!");
         plugin.getLogger().info(player.getName() + " has been verified!");

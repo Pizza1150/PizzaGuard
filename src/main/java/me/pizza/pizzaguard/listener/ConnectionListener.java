@@ -21,13 +21,12 @@ public class ConnectionListener implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent ev) {
         Player player = ev.getPlayer();
+        verificationManager.unverifyPlayer(player);
 
-        if (verificationManager.isOperator(player)) {
+        if (verificationManager.isInWhitelist(player)) {
             player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, -1, 1, false, false, false));
             player.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, -1, 14, false, false, false));
         }
-
-        verificationManager.unverifyPlayer(player);
     }
 
     @EventHandler
